@@ -134,9 +134,52 @@ class preprocessing {
 	bw2.close();
 	fw2.close();
     }
+
+    private static String coef(String x) {
+	if (x.equals("high")) {
+	    return "0.3";
+	}
+	else if (x.equals("medium")) {
+	    return "0.6";
+	}
+	else if (x.equals("low")) {
+	    return "0.9";
+	}
+	return "1";
+    }
+
+    private static void makeTraffic() throws IOException {
+	File file = new File("data/traffic.csv");
+	FileWriter fw = new FileWriter("traffic.pl");
+	BufferedWriter bw = new BufferedWriter(fw);
+	BufferedReader br = new BufferedReader(new FileReader(file));
+	br.readLine();
+	String st;
+	String[] parts;
+	String[] parts2;
+	String[] parts3;
+	while ((st = br.readLine()) != null) {
+	    parts = st.split(",");
+	    if (!lineways.containsKey(parts[0])) {
+		continue;
+	    }
+	    if (parts.length < 3) {
+		continue;
+	    }
+	    if (parts[2].length() == 0) {
+		continue;
+	    }
+	    parts2 = parts[2].split("\\|");
+	    for (int i = 0; i < parts2.length; i++) {
+		bw.write("traffic("+parts[0]+","+Integer.parseInt(parts2[i].substring(0,2)) + "," + Integer.parseInt(parts2[i].substring(6,8))+","+coef(parts2[i].substring(12)) + ").\n");
+	    }
+	}
+    }
     
     public static void main(String[] args) throws IOException {
 	makeLines();
 	makeNodes();
+	makeTraffic();
     }
+    
 }
