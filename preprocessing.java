@@ -174,12 +174,48 @@ class preprocessing {
 		bw.write("traffic("+parts[0]+","+Integer.parseInt(parts2[i].substring(0,2)) + "," + Integer.parseInt(parts2[i].substring(6,8))+","+coef(parts2[i].substring(12)) + ").\n");
 	    }
 	}
+	br.close();
+	bw.close();
+	fw.close();
+    }
+
+    private static void makeTaxis() throws IOException {
+	File file = new File("data/taxis.csv");
+	FileWriter fw = new FileWriter("taxis.pl");
+	BufferedWriter bw = new BufferedWriter(fw);
+	BufferedReader br = new BufferedReader(new FileReader(file));
+	br.readLine();
+	String st;
+	String[] parts;
+	String[] parts2;
+	while ((st = br.readLine()) != null) {
+	    parts = st.split(",");
+	    if (parts[3].equals("no")) {
+		continue;
+	    }
+	    parts2 = parts[5].split("\\|");
+	    for (int i = 0; i < parts2.length; i++) {
+		bw.write("taxi("+parts[0]+","+parts[1]+","+parts[2]+","+parts[4].substring(2)+","+parts2[i]+","+parts[6]+","+parts[7]+").\n");
+	    }
+	}
+	br.close();
+	bw.close();
+	fw.close();
+    }
+
+    private static void makeClient() throws IOException {
+	FileWriter fw = new FileWriter("client.pl");
+	BufferedWriter bw = new BufferedWriter(fw);
+	bw.write("client(23.733912,37.975687,23.772518,38.012301,20,3,greek).\n");
+	bw.close();
+	fw.close();
     }
     
     public static void main(String[] args) throws IOException {
 	makeLines();
 	makeNodes();
 	makeTraffic();
+	makeClient();
+	makeTaxis();
     }
-    
 }
