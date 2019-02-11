@@ -1,10 +1,14 @@
 distance(Id1, Id2, Time, Dist) :-
 	node(Id1, Line_id, X1, Y1), node(Id2, Line_id, X2, Y2),
-	D is (X1-X2)^2+(Y1-Y2)^2,
+	D is sqrt((X1-X2)^2+(Y1-Y2)^2) * 111195,
 	line(Line_id, Limit, _),
 	(traffic(Line_id, Low, High, Status), Time >= Low, Time < High ->
-	Dist is D / Limit / Status
-	; Dist is D / Limit).
+	Dist is D / Limit / 1000 / Status
+	; Dist is D / Limit / 1000).
+	
+dist(Id1, Id2, Dist) :-
+	node(Id1, Line_id, X1, Y1), node(Id2, Line_id, X2, Y2),
+	Dist is sqrt((X1-X2)^2+(Y1-Y2)^2) * 111195.
 	
 can_ride(client(X, Y, Xd, Yd, _, People, Language), Id) :-
 	taxi(_, _, Id, Capacity, Language, _, LongD),
@@ -13,7 +17,7 @@ can_ride(client(X, Y, Xd, Yd, _, People, Language), Id) :-
 	(LongD = no -> D < 0.45 ; true).
 
 
-closestNode(X, Y, Id_ret) :-
+closest_node(X, Y, Id_ret) :-
 	findall(node(Id, Line_id, Xn, Yn), node(Id, Line_id, Xn, Yn), L),
 	once(node(Idt, _, Xt, Yt)),
 	Min is (X-Xt)^2+(Y-Yt)^2,

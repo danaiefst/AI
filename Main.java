@@ -1,176 +1,219 @@
 import java.util.*;
+import javafx.util.*;
 import java.io.*;
+import java.lang.Math;
 
-import data.com.ugos.jiprolog.engine.JIPEngine;
-import data.com.ugos.jiprolog.engine.JIPQuery;
-import data.com.ugos.jiprolog.engine.JIPSyntaxErrorException;
-import data.com.ugos.jiprolog.engine.JIPTerm;
-import data.com.ugos.jiprolog.engine.JIPTermParser;
+import com.ugos.jiprolog.engine.JIPEngine;
+import com.ugos.jiprolog.engine.JIPQuery;
+import com.ugos.jiprolog.engine.JIPSyntaxErrorException;
+import com.ugos.jiprolog.engine.JIPTerm;
+import com.ugos.jiprolog.engine.JIPTermParser;
 
 public class Main {
 
-	private static JIPEngine jip;
-	private static JIPTermParser parser;
-	private static JIPQuery jipQuery; 
-        private static JIPTerm term;
+    private static JIPEngine jip;
+    private static JIPTermParser parser;
+    private static JIPQuery jipQuery; 
+    private static JIPTerm term;
 
-	private static ArrayList<ArrayList<Node>> astar(int start, int end) {
-		HashSet<Integer> closedSet = new HashSet<>();
-		HashSet<Integer> openSet = new HashSet<>();
-		openSet.add(start);
-		HashMap<Integer, ArrayList<Node>> cameFrom = new HashMap<>();
-		HashMap<Node, Double> gScore = new HashMap<>();
-		gScore.put(start, 0.0);
-		HashMap<Node, Double> fScore = new HashMap<>();
-		fScore.put(start, start.weight(end));
-		ArrayList<Node> tempcame = new ArrayList<>(), nb;
-		cameFrom.put(start, tempcame);
-		Node current;
-		Node temp;
-		double tentativeGScore;
-		Iterator i;
-		while (!openSet.isEmpty()) {
-		    //find next current node
-		    i = openSet.iterator();
-		    temp = (Node)i.next();
-		    double minscore = fScore.get(temp);
-		    current = temp;
-		    while (i.hasNext()) {
-			temp = (Node)i.next();
-			if (fScore.get(temp) < minscore) {
-			    current = temp;
-			    minscore = fScore.get(temp);
-			}
-		    }
-
-		    if (current == end) {
-			return reconstructPaths2(cameFrom, current);
-		    }
-		    for (int l = 0; l < current.edges.size(); l++) {
-			if ((int)current.name.id != (int)current.edges.get(l).name.id) {
-			    if (current.edges.get(l) == end) {
-				return reconstructPaths2(cameFrom, current);
-			    }
-			}
-		    }
-
-		    openSet.remove(current);
-		    closedSet.add(current);
-		    for (int l = 0; l < current.edges.size(); l++) {
-		    	if ((int)current.edges.get(l).name.id != (int)current.name.id) {
-			    closedSet.add(current.edges.get(l));
-			    openSet.remove(current.edges.get(l));
-		    	}
-		    }
-		    
-		    nb = neighbours(current);
-		    for (int j = 0; j < nb.size(); j++) {
-			if (closedSet.contains(nb.get(j))) {
-			    continue;
-			}
-			tentativeGScore = gScore.get(current) + current.weight(nb.get(j));
-			if (!openSet.contains(nb.get(j))) {
-			    openSet.add(nb.get(j));
-			    tempcame = new ArrayList<>();
-			    tempcame.add(current);
-			    cameFrom.put(nb.get(j), tempcame);
-			    gScore.put(nb.get(j), tentativeGScore);
-			    fScore.put(nb.get(j), gScore.get(nb.get(j)) + nb.get(j).weight(end));
-			}
-			else if (tentativeGScore > gScore.get(nb.get(j))) {
-			    continue;
-			}
-			else if (tentativeGScore == gScore.get(nb.get(j))) {
-			    cameFrom.get(nb.get(j)).add(current);
-			}
-			else {
-			    tempcame = new ArrayList<>();
-			    tempcame.add(current);
-			    cameFrom.replace(nb.get(j), tempcame);
-			    gScore.replace(nb.get(j), tentativeGScore);
-			    fScore.replace(nb.get(j), gScore.get(nb.get(j)) + nb.get(j).weight(end));
-			}
-		    }
-		}
-		return null;
-	}
-
-	private static String getClosestNode(String x, String y) {
-		jipQuery = jip.openSynchronousQuery(parser.parseTerm("closestNode(" + x + "," + y + "X)."));
-		return jipQuery.nextSolution().getVariablesTable().get("X").toString();
-    	}
+    private static String getClosestNode(String x, String y) {
+	jipQuery = jip.openSynchronousQuery(parser.parseTerm("closestNode(" + x + "," + y + "X)."));
+	return jipQuery.nextSolution().getVariablesTable().get("X").toString();
+    }
     	
-    	private static ArrayList<String> neighbours(String x)
-		
-	public static void main(String[] args) throws JIPSyntaxErrorException, IOException {
-		
-		jip = new JIPEngine();
-		jip.consultFile("data.pl");
-		jip.consultFile("lines.pl");
-		jip.consultFile("nodes.pl");
-		jip.consultFile("client.pl");
-		jip.consultFile("taxis.pl");
-		jip.consultFile("traffic.pl");
-		jip.consultFile("graph.pl");
-		
-		parser = jip.getTermParser();
-		
-		
-		System.out.println("CASE 1");
-		jipQuery = jip.openSynchronousQuery(parser.parseTerm("likes(" + x + "," + y + ")."));
-		if (jipQuery.nextSolution() != null) {
-			System.out.println("Yes. " + x + " likes " + y + ".");
-		} else {
-			System.out.println("No. " + x + " doesn't like " + y + ".");
-		}
-		
-		System.out.println("CASE 2");
-		jipQuery = jip.openSynchronousQuery(parser.parseTerm("likes(" + x + ",Y)."));
-		term = jipQuery.nextSolution();
-		while (term != null) {
-			System.out.println(x + " likes " + term.getVariablesTable().get("Y").toString());
-			term = jipQuery.nextSolution();
-		}
-
-		System.out.println("CASE 3");
-		jipQuery = jip.openSynchronousQuery(parser.parseTerm("agree(X,Y)."));
-		term = jipQuery.nextSolution();
-		while (term != null) {
-			System.out.println(term.getVariablesTable().get("X").toString() + " agrees with " + term.getVariablesTable().get("Y").toString());
-			term = jipQuery.nextSolution();
-		}
-		
-		System.out.println("CASE 4");
-		jipQuery = jip.openSynchronousQuery(parser.parseTerm("age(" + x + ",Z)."));
-		term = jipQuery.nextSolution();
-		while (term != null) {
-			System.out.println(x + " is " + term.getVariablesTable().get("Z").toString() + " years old.");
-			term = jipQuery.nextSolution();
-		}
-		
-		System.out.println("CASE 5");
-		jipQuery = jip.openSynchronousQuery(parser.parseTerm("prefers(" + x + ",Z)."));
-		term = jipQuery.nextSolution();
-		while (term != null) {
-			System.out.println(x + " prefers " + term.getVariablesTable().get("Z").toString());
-			term = jipQuery.nextSolution();
-		}
-		
-		System.out.println("CASE 6");
-		jipQuery = jip.openSynchronousQuery(parser.parseTerm("prefersHealthy(" + x + ",Z)."));
-		term = jipQuery.nextSolution();
-		while (term != null) {
-			System.out.println(x + " prefers " + term.getVariablesTable().get("Z").toString());
-			term = jipQuery.nextSolution();
-		}
-		
-		System.out.println("CASE 7");
-		jipQuery = jip.openSynchronousQuery(parser.parseTerm("prefersMost(" + x + ",Z)."));
-		term = jipQuery.nextSolution();
-		while (term != null) {
-			System.out.println(x + " prefers " + term.getVariablesTable().get("Z").toString());
-			term = jipQuery.nextSolution();
-		}
-
+    private static ArrayList<String> neighbours(String x) {
+	ArrayList<String> ret = new ArrayList<>();
+	jipQuery = jip.openSynchronousQuery(parser.parseTerm("child(" + x + ",Y)."));
+	term = jipQuery.nextSolution();
+	while (term != null) {
+	    ret.add(term.getVariablesTable().get("Y").toString());
+	    term = jipQuery.nextSolution();
 	}
+	return ret;
+    }
+	
+    private static ArrayList<ArrayList<String>> reconstructPaths2(HashMap<String, ArrayList<String>> cameFrom, String end){
+	ArrayList<ArrayList<String>> ret = new ArrayList<>();
+	ArrayList<ArrayList<String>> newret = new ArrayList<>();
+	ArrayList<String> temp = new ArrayList<>();
+	ArrayList<String> oldpath, newpath, fathers;
+	String child;
+	temp.add(end);
+	ret.add(temp);
+	int count = 0, ulimit = 20, dlimit = -1;
+	while(true){
+	    newret = new ArrayList<>();
+	    for(int i = 0; i < ret.size(); i++){
+		oldpath = ret.get(i);
+		child = oldpath.get(oldpath.size()-1);
+		fathers = cameFrom.get(child);
+		if(fathers.size() == 0){
+		    continue;
+		}
+		for(int j = 0; j < fathers.size(); j++){
+		    newpath = new ArrayList<>();
+		    newpath.addAll(oldpath);
+		    newpath.add(fathers.get(j));
+		    newret.add(newpath);
+		}
+	    }
+	    if(newret.isEmpty()) break;
+	    ret = newret;
+	    count++;
+	}
+	return ret;
+    }
+	
+    private static double heuristic(String start, String end) {
+	jipQuery = jip.openSynchronousQuery(parser.parseTerm("node(" + start + ",_, X1, Y1)."));
+	term = jipQuery.nextSolution();
+	double x1 = Double.parseDouble(term.getVariablesTable().get("X1").toString());
+	double y1 = Double.parseDouble(term.getVariablesTable().get("Y1").toString());
+	jipQuery = jip.openSynchronousQuery(parser.parseTerm("node(" + end + ",_, X1, Y1)."));
+	term = jipQuery.nextSolution();
+	double x2 = Double.parseDouble(term.getVariablesTable().get("X1").toString());
+	double y2 = Double.parseDouble(term.getVariablesTable().get("Y1").toString());
+	return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) / 60 / 1000;
+    }
+
+    private static double distance(String start, String end, String time) {
+	jipQuery = jip.openSynchronousQuery(parser.parseTerm("distance(" + start + "," + end + "," + time + ",X)."));
+	return  Double.parseDouble(jipQuery.nextSolution().getVariablesTable().get("X").toString());
+    }
+
+    private static double pathSize(ArrayList<String> path, String time) {
+	double ret, temp;
+	Double mytime = Double.parseDouble(time);
+	ret = 0;
+	for (int i = 0; i < path.size() - 1; i++) {
+	    temp = distance(path.get(i), path.get(i+1), time);
+	    ret += temp;
+	}
+	return ret;
+    }
+    
+    
+    private static ArrayList<ArrayList<String>> astar(String start, String end, double time) throws IOException{
+	HashSet<String> closedSet = new HashSet<>();
+	HashSet<String> openSet = new HashSet<>();
+	openSet.add(start);
+	HashMap<String, ArrayList<String>> cameFrom = new HashMap<>();
+	HashMap<String, Double> gScore = new HashMap<>();
+	gScore.put(start, 0.0);
+	HashMap<String, Double> fScore = new HashMap<>();		
+	fScore.put(start, heuristic(start, end));
+	ArrayList<String> tempcame = new ArrayList<>(), nb;
+	cameFrom.put(start, tempcame);
+	String current;
+	String temp;
+	double tentativeGScore;
+	Iterator i;
+	ArrayList<String> neigh;
+	while (!openSet.isEmpty()) {
+	    //find next current node
+	    i = openSet.iterator();
+	    temp = (String)i.next();
+	    double minscore = fScore.get(temp);
+	    current = temp;
+	    while (i.hasNext()) {
+		temp = (String)i.next();
+		if (fScore.get(temp) < minscore) {
+		    current = temp;
+		    minscore = fScore.get(temp);
+		}
+	    }
+	    if (current.equals(end)) {
+		return reconstructPaths2(cameFrom, current);
+	    }
+	    neigh = neighbours(current);
+	    openSet.remove(current);
+	    closedSet.add(current);	    
+	    for (int j = 0; j < neigh.size(); j++) {
+		if (closedSet.contains(neigh.get(j))) {
+		    continue;
+		}
+		tentativeGScore = gScore.get(current) + distance(current, neigh.get(j), (new Double(time + gScore.get(current))).toString());
+		if (!openSet.contains(neigh.get(j))) {
+		    openSet.add(neigh.get(j));
+		    tempcame = new ArrayList<>();
+		    tempcame.add(current);
+		    cameFrom.put(neigh.get(j), tempcame);
+		    gScore.put(neigh.get(j), tentativeGScore);
+		    fScore.put(neigh.get(j), gScore.get(neigh.get(j)) + heuristic(neigh.get(j),end));
+		}
+		else if (tentativeGScore > gScore.get(neigh.get(j))) {
+		    continue;
+		}
+		else if (tentativeGScore == gScore.get(neigh.get(j))) {
+		    cameFrom.get(neigh.get(j)).add(current);
+		}
+		else {
+		    tempcame = new ArrayList<>();
+		    tempcame.add(current);
+		    cameFrom.replace(neigh.get(j), tempcame);
+		    gScore.replace(neigh.get(j), tentativeGScore);
+		    fScore.replace(neigh.get(j), gScore.get(neigh.get(j)) + heuristic(neigh.get(j), end));
+		}
+	    }
+	}
+	return null;
+    }
+		
+    public static void main(String[] args) throws JIPSyntaxErrorException, IOException {
+	jip = new JIPEngine();
+	jip.consultFile("data.pl");
+	System.out.println("Loaded data.pl");
+	jip.consultFile("lines.pl");
+	System.out.println("Loaded lines.pl");
+	jip.consultFile("nodes.pl");
+	System.out.println("Loaded nodes.pl");
+	jip.consultFile("client.pl");
+	System.out.println("Loaded client.pl");
+	jip.consultFile("taxis.pl");
+	System.out.println("Loaded taxis.pl");
+	jip.consultFile("traffic.pl");
+	System.out.println("Loaded traffic.pl");
+	jip.consultFile("graph.pl");
+	System.out.println("Loaded graph.pl");
+	parser = jip.getTermParser();
+	jipQuery = jip.openSynchronousQuery(parser.parseTerm("client(X,Y,Xd,Yd,Time,People,Language)."));
+	term = jipQuery.nextSolution();
+	String x = term.getVariablesTable().get("X").toString();
+	String y = term.getVariablesTable().get("Y").toString();
+	String xd = term.getVariablesTable().get("Xd").toString();
+	String yd = term.getVariablesTable().get("Yd").toString();
+	Double time = Double.parseDouble(term.getVariablesTable().get("Time").toString());
+	String time2 = term.getVariablesTable().get("Time").toString();
+	String people = term.getVariablesTable().get("People").toString();
+	String language = term.getVariablesTable().get("Language").toString();
+	jipQuery = jip.openSynchronousQuery(parser.parseTerm("closest_node(" + x + "," + y + ",X)."));
+	String client = jipQuery.nextSolution().getVariablesTable().get("X").toString();
+	System.out.println("Found client");
+	jipQuery = jip.openSynchronousQuery(parser.parseTerm("closest_node(" + xd + "," + yd + ",X)."));
+	String dest = jipQuery.nextSolution().getVariablesTable().get("X").toString();
+	System.out.println("Found destination");
+	jipQuery = jip.openSynchronousQuery(parser.parseTerm("can_ride(client(" + x + "," + y +"," + xd + "," + yd + "," + time2 + "," + people + "," + language + "), X)."));
+
+	ArrayList<String> taxis_ids = new ArrayList<>();
+	while((term = jipQuery.nextSolution()) != null) {
+	    taxis_ids.add(term.getVariablesTable().get("X").toString());
+	}
+	System.out.println("Found available taxis");
+	ArrayList<Pair<String,Double>> taxis;
+	taxis = new ArrayList<>();
+	ArrayList<ArrayList<String>> paths;
+	double dist;
+	System.out.println(taxis_ids.size());
+	for(String i: taxis_ids) {
+	    jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(X,Y,"+i+",_,_,_,_), closest_node(X,Y,Id)."));
+	    String start = jipQuery.nextSolution().getVariablesTable().get("Id").toString();
+	    paths = astar(start, client, time);
+	    jipQuery = jip.openSynchronousQuery(parser.parseTerm("dist(" + start + "," + client + ",X)."));
+	    String dista = jipQuery.nextSolution().getVariablesTable().get("X").toString();
+	    dist = pathSize(paths.get(0), time.toString());
+	    System.out.println(i + " " + dist + dista);
+	    taxis.add(new Pair(start, dist));
+	}
+	System.out.println(taxis.size());
+    }
 }
