@@ -8,7 +8,7 @@ client(x, y, x_dest, y_dest, time, people, language)
 
 taxi(x, y, id, capacity, language, rating, long_distance)
 
-child(node1, node2)
+child(node_id1, node_id2)
 
 distance(node1, node2, time, dist)
 
