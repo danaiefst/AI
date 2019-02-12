@@ -73,7 +73,7 @@ public class Main {
 	term = jipQuery.nextSolution();
 	double x2 = Double.parseDouble(term.getVariablesTable().get("X1").toString());
 	double y2 = Double.parseDouble(term.getVariablesTable().get("Y1").toString());
-	return 5 * Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) / 60 / 1000;
+	return 6 * Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) / 60 / 1000;
     }
 
     private static double distance(String start, String end, String time) {
@@ -175,6 +175,81 @@ public class Main {
         p2 = p2 / 60;
         return zfill(Integer.toString(p2),2) + ":" + zfill(Integer.toString(p3+(p1>30?1:0)),2);
     }
+	
+    private static void findQuickestTaxis(ArrayList<Pair<String,Double>> taxis, ArrayList<Double> ratings, String id_1, Double dist_1, Double rating_1, Double time) {
+    	double dist_2 = 24, dist_3 = 24, dist_4 = 24, dist_5 = 24, rating_2 = 0, rating_3 = 0, rating_4 = 0, rating_5 = 0;
+    	String id_2 = "", id_3 = "", id_4 = "", id_5 = "";
+    	for(int i = 0; i < taxis.size(); i++) {
+		if(!taxis.get(i).getKey().equals(id_1) && taxis.get(i).getValue() < dist_2) {
+			dist_2 = taxis.get(i).getValue();
+			id_2 = taxis.get(i).getKey();
+			rating_2 =  ratings.get(i);
+		}
+	}
+	for(int i = 0; i < taxis.size(); i++) {
+		if(!taxis.get(i).getKey().equals(id_1) && !taxis.get(i).getKey().equals(id_2) && taxis.get(i).getValue() < dist_3) {
+			dist_3 = taxis.get(i).getValue();
+			id_3 = taxis.get(i).getKey();
+			rating_3 = ratings.get(i);
+		}
+	}
+	for(int i = 0; i < taxis.size(); i++) {
+		if(!taxis.get(i).getKey().equals(id_1) && !taxis.get(i).getKey().equals(id_2) && !taxis.get(i).getKey().equals(id_3) && taxis.get(i).getValue() < dist_4) {
+			dist_4 = taxis.get(i).getValue();
+			id_4 = taxis.get(i).getKey();
+			rating_4 = ratings.get(i);
+		}
+	}
+	for(int i = 0; i < taxis.size(); i++) {
+		if(!taxis.get(i).getKey().equals(id_1) && !taxis.get(i).getKey().equals(id_2) && !taxis.get(i).getKey().equals(id_3) && !taxis.get(i).getKey().equals(id_4) && taxis.get(i).getValue() < dist_5) {
+			dist_5 = taxis.get(i).getValue();
+			id_5 = taxis.get(i).getKey();
+			rating_5 = ratings.get(i);
+		}
+	}
+    	System.out.println("\nSuitable Taxis (sorted by Arrival Time):\n#1 Id: " + id_1 + "  Arrival Time: " + getTime(time + dist_1) + "  Rating: " + rating_1 + "\n#2 Id: " + id_2 + "  Arrival Time: " + getTime(time + dist_2) + "  Rating: " + rating_2 + "\n#3 Id: " + id_3 + "  Arrival Time: " + getTime(time + dist_3) + "  Rating: " + rating_3 + "\n#4 Id: " + id_4 + "  Arrival Time: " + getTime(time + dist_4) + "  Rating: " + rating_4 + "\n#5 Id: " + id_5 + "  Arrival Time: " + getTime(time + dist_5) + "  Rating: " + rating_5 + "\n");
+    }
+    
+    private static void findBestRatedTaxis(ArrayList<Pair<String,Double>> taxis, ArrayList<Double> ratings, Double time) {
+    	double dist_1 = 24, dist_2 = 24, dist_3 = 24, dist_4 = 24, dist_5 = 24, rating_1 = 0, rating_2 = 0, rating_3 = 0, rating_4 = 0, rating_5 = 0;
+    	String id_1 = "", id_2 = "", id_3 = "", id_4 = "", id_5 = "";
+    	for(int i = 0; i < taxis.size(); i++) {
+		if(ratings.get(i) >= rating_1) {
+			rating_1 =  ratings.get(i);
+			dist_1 = taxis.get(i).getValue();
+			id_1= taxis.get(i).getKey();
+		}
+	}
+	for(int i = 0; i < taxis.size(); i++) {
+		if(!taxis.get(i).getKey().equals(id_1) && ratings.get(i) >= rating_2) {
+			rating_2 =  ratings.get(i);
+			dist_2 = taxis.get(i).getValue();
+			id_2= taxis.get(i).getKey();
+		}
+	}
+	for(int i = 0; i < taxis.size(); i++) {
+		if(!taxis.get(i).getKey().equals(id_1) && !taxis.get(i).getKey().equals(id_2) && ratings.get(i) >= rating_3) {
+			rating_3 =  ratings.get(i);
+			dist_3 = taxis.get(i).getValue();
+			id_3 = taxis.get(i).getKey();
+		}
+	}
+	for(int i = 0; i < taxis.size(); i++) {
+		if(!taxis.get(i).getKey().equals(id_1) && !taxis.get(i).getKey().equals(id_2) && !taxis.get(i).getKey().equals(id_3) && ratings.get(i) >= rating_4) {
+			dist_4 = taxis.get(i).getValue();
+			id_4 = taxis.get(i).getKey();
+			rating_4 = ratings.get(i);
+		}
+	}
+	for(int i = 0; i < taxis.size(); i++) {
+		if(!taxis.get(i).getKey().equals(id_1) && !taxis.get(i).getKey().equals(id_2) && !taxis.get(i).getKey().equals(id_3) && !taxis.get(i).getKey().equals(id_4) && ratings.get(i) >= rating_5) {
+			dist_5 = taxis.get(i).getValue();
+			id_5 = taxis.get(i).getKey();
+			rating_5 = ratings.get(i);
+		}
+	}
+    	System.out.println("\nSuitable Taxis (sorted by Rating):\n#1 Id: " + id_1 + "  Arrival Time: " + getTime(time + dist_1) + "  Rating: " + rating_1 + "\n#2 Id: " + id_2 + "  Arrival Time: " + getTime(time + dist_2) + "  Rating: " + rating_2 + "\n#3 Id: " + id_3 + "  Arrival Time: " + getTime(time + dist_3) + "  Rating: " + rating_3 + "\n#4 Id: " + id_4 + "  Arrival Time: " + getTime(time + dist_4) + "  Rating: " + rating_4 + "\n#5 Id: " + id_5 + "  Arrival Time: " + getTime(time + dist_5) + "  Rating: " + rating_5 + "\n");
+    }
 		
     public static void main(String[] args) throws JIPSyntaxErrorException, IOException {
 	jip = new JIPEngine();
@@ -223,17 +298,18 @@ public class Main {
 	ArrayList<ArrayList<String>> path;
 	ArrayList<ArrayList<ArrayList<String>>> paths = new ArrayList<>();
 	ArrayList<ArrayList<ArrayList<Pair<String,String>>>> KML_paths = new ArrayList<>();
-	double dist,min_dist = 24;
+	ArrayList<Double> ratings = new ArrayList<>();
+	double dist, min_dist = 24, rating_1 = 0;
 	String min_dist_i = "", xt, yt;
 	Pair<String, String> coor;
-	double dist_2 = 24, dist_3 = 24, dist_4 = 24, dist_5 = 24, rating_1 = 0;
-	String id_2 = "", id_3 = "", id_4 = "", id_5 = "";
+	Pair<String, Double> temp;
 	for(String i: taxis_ids) {
-	    jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(X,Y,"+i+",_,_,_,_), closest_node(X,Y,Id)."));
+	    jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(X,Y,"+i+",_,_,R,_), closest_node(X,Y,Id)."));
 	    term = jipQuery.nextSolution();
 	    String start = term.getVariablesTable().get("Id").toString();
 	    xt = term.getVariablesTable().get("X").toString();
 	    yt = term.getVariablesTable().get("Y").toString();
+	    ratings.add(Double.parseDouble(term.getVariablesTable().get("R").toString()));
 	    coor = new Pair(xt,yt);
 	    KML_taxis.add(coor);
 	    path = astar(start, client, time);
@@ -255,11 +331,10 @@ public class Main {
 	    if(dist < min_dist) {
 	    	min_dist = dist;
 	    	min_dist_i = i;
+	    	rating_1 = ratings.get(ratings.size()-1);
 	    }
-	    jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(_,_,"+min_dist_i+",_,_,R,_)."));
-    	    term = jipQuery.nextSolution();
-    	    rating_1 = Double.parseDouble(term.getVariablesTable().get("R").toString());
-	    taxis.add(new Pair(i, dist));
+	    temp = new Pair(i, dist);
+	    taxis.add(temp);
 	}
 	
 	ArrayList<ArrayList<Pair<String,String>>> KML_dest = new ArrayList<>();
@@ -277,45 +352,11 @@ public class Main {
 	    	}
 	    	KML_dest.add(tempi);
 	}
-	KMLCreator.createKML(KML_paths, new Pair(x, y), KML_taxis, taxis_ids, min_dist_i, "outfile.kml", KML_dest);
+	coor = new Pair(x, y);
+	KMLCreator.createKML(KML_paths, coor, KML_taxis, taxis_ids, min_dist_i, "outfile.kml", KML_dest);
         
         //find first 5 best taxis
-	for(Pair<String,Double> i: taxis) {
-		if(!i.getKey().equals(min_dist_i) && i.getValue() < dist_2) {
-			dist_2 = i.getValue();
-			id_2 = i.getKey();
-		}
-	}
-	jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(_,_,"+id_2+",_,_,R,_)."));
-    	term = jipQuery.nextSolution();
-    	double rating_2 = Double.parseDouble(term.getVariablesTable().get("R").toString());
-	for(Pair<String,Double> i: taxis) {
-		if(!i.getKey().equals(min_dist_i) && !i.getKey().equals(id_2) && i.getValue() < dist_3) {
-			dist_3 = i.getValue();
-			id_3 = i.getKey();
-		}
-	}
-	jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(_,_,"+id_3+",_,_,R,_)."));
-    	term = jipQuery.nextSolution();
-    	double rating_3 = Double.parseDouble(term.getVariablesTable().get("R").toString());
-	for(Pair<String,Double> i: taxis) {
-		if(!i.getKey().equals(min_dist_i) && !i.getKey().equals(id_2) && !i.getKey().equals(id_3) && i.getValue() < dist_4) {
-			dist_4 = i.getValue();
-			id_4 = i.getKey();
-		}
-	}
-	jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(_,_,"+id_4+",_,_,R,_)."));
-    	term = jipQuery.nextSolution();
-    	double rating_4 = Double.parseDouble(term.getVariablesTable().get("R").toString());
-	for(Pair<String,Double> i: taxis) {
-		if(!i.getKey().equals(min_dist_i) && !i.getKey().equals(id_2) && !i.getKey().equals(id_3) && !i.getKey().equals(id_4) && i.getValue() < dist_5) {
-			dist_5 = i.getValue();
-			id_5 = i.getKey();
-		}
-	}
-	jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(_,_,"+id_5+",_,_,R,_)."));
-    	term = jipQuery.nextSolution();
-    	double rating_5 = Double.parseDouble(term.getVariablesTable().get("R").toString());
-    	System.out.println("Closest Taxis:\n#1 Id: " + min_dist_i + " Arrival Time: " + getTime(time + min_dist) + " Rating: " + rating_1 + "\n#2 Id: " + id_2 + " Arrival Time: " + getTime(time + dist_2) + " Rating: " + rating_1 + "\n#3");
+        findQuickestTaxis(taxis, ratings, min_dist_i, min_dist, rating_1, time);
+        findBestRatedTaxis(taxis, ratings, time);
     }
 }
