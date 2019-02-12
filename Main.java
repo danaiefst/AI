@@ -200,33 +200,31 @@ public class Main {
 	}
 	System.out.println("Found available taxis");
 	ArrayList<Pair<String,Double>> taxis;
-	ArrayList<String> taxis_id;
-	ArrayList<Pair<Double, Double>> KML_taxis;
+	ArrayList<Pair<String, String>> KML_taxis = new ArrayList<>();
 	taxis = new ArrayList<>();
 	ArrayList<ArrayList<String>> path;
-	ArrayList<ArrayList<Arraylist<String>>> paths = new ArrayList<>();
-	ArrayList<ArrayList<ArrayList<Pair<Double,Double>>>> KML_paths = new ArrayList<>();
-	ArrayList
-	double dist,xt,yt,min_dist = 24;
-	String min_dist_i = "";
-	Pair<Double, Double> coor;
+	ArrayList<ArrayList<ArrayList<String>>> paths = new ArrayList<>();
+	ArrayList<ArrayList<ArrayList<Pair<String,String>>>> KML_paths = new ArrayList<>();
+	double dist,min_dist = 24;
+	String min_dist_i = "", xt, yt;
+	Pair<String, String> coor;
 	for(String i: taxis_ids) {
 	    jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(X,Y,"+i+",_,_,_,_), closest_node(X,Y,Id)."));
 	    term = jipQuery.nextSolution();
 	    String start = term.getVariablesTable().get("Id").toString();
-	    xt = Double.parseDouble(term.getVariablesTable().get("X").toString());
-	    yt = Double.parseDouble(term.getVariablesTable().get("Y").toString());
+	    xt = term.getVariablesTable().get("X").toString();
+	    yt = term.getVariablesTable().get("Y").toString();
 	    coor = new Pair(xt,yt);
 	    KML_taxis.add(coor);
 	    path = astar(start, client, time);
-	    ArrayList<ArrayList<Pair<Double,Double>>> tempi = new ArrayList<>();
+	    ArrayList<ArrayList<Pair<String,String>>> tempi = new ArrayList<>();
 	    for (int j = 0; j < path.size(); j++) {
-	    	ArrayList<Pair<Double, Double>> tempj = new ArrayList<>();
+	    	ArrayList<Pair<String, String>> tempj = new ArrayList<>();
 	    	for (int k = 0; k < path.get(j).size(); k++) {
 	    		jipQuery = jip.openSynchronousQuery(parser.parseTerm("node(" + path.get(j).get(k) + ",_,X,Y)."));
 	    		term = jipQuery.nextSolution();
-	    		xt = Double.parseDouble(term.getVariablesTable().get("X").toString());
-	    		yt = Double.parseDouble(term.getVariablesTable().get("Y").toString());
+	    		xt = term.getVariablesTable().get("X").toString();
+	    		yt = term.getVariablesTable().get("Y").toString();
 	    		coor = new Pair(xt, yt);
 	    		tempj.add(coor);
 	    	}
@@ -240,7 +238,7 @@ public class Main {
 	    }
 	    System.out.println(i + " " + dist);
 	    taxis.add(new Pair(start, dist));
-	    taxis_id.add(start);
-	}			
+	}
+	KMLCreator.createKML(KML_paths, new Pair(x, y), KML_taxis, taxis_ids, min_dist_i, "outfile.kml");
     }
 }

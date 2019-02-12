@@ -1,6 +1,6 @@
 import java.util.*;
 import java.io.*;
-
+import javafx.util.*;
 class KMLCreator {
 
     private static void writeToDepth(int depth, PrintWriter writer, String st) {
@@ -11,9 +11,9 @@ class KMLCreator {
 	writer.write(ret + st);
     }
     
-    private static void writePath(ArrayList<Pair<Double,Double>> path, PrintWriter writer, int depth, String color, int id) {
+    private static void writePath(ArrayList<Pair<String,String>> path, PrintWriter writer, int depth, String color, String id) {
 	writeToDepth(depth++, writer, "<Placemark>\n");
-	writeToDepth(depth, writer, "<name>Taxi " + Integer.toString(id) + " route</name>\n");
+	writeToDepth(depth, writer, "<name>Taxi " + id + " route</name>\n");
 	writeToDepth(depth, writer, "<styleUrl>#" + color + "</styleUrl>\n");
 	writeToDepth(depth++, writer, "<LineString>\n");
 	writeToDepth(depth, writer, "<extrude>1</extrude>\n");
@@ -22,10 +22,10 @@ class KMLCreator {
 	writeToDepth(depth++, writer, "<coordinates>\n");
 	for(int i = 0; i < path.size(); i++) {
 	    if (color.equals("red")) {
-		writeToDepth(depth, writer, String.valueOf(path.get(i).getKey()) + "," + String.valueOf(path.get(i).getValue()) + ",5\n");
+		writeToDepth(depth, writer, path.get(i).getKey() + "," + path.get(i).getValue() + ",5\n");
 	    }
 	    else {
-		writeToDepth(depth, writer, String.valueOf(path.get(i).getKey()) + "," + String.valueOf(path.get(i).getValue()) + ",10\n");
+		writeToDepth(depth, writer, path.get(i).getKey() + "," + path.get(i).getValue() + ",10\n");
 	    }
 	}
 	writeToDepth(--depth, writer, "</coordinates>\n");
@@ -33,9 +33,9 @@ class KMLCreator {
 	writeToDepth(--depth, writer, "</Placemark>\n");
     }
     
-    public static void createKML(ArrayList<ArrayList<ArrayList<Pair<Double,Double > > > > paths, Pair<Double, Double> client, ArrayList<Pair<Double, Double> > taxis, ArrayList<String> taxiids, String besttaxiid, String filename) throws IOException {
+    public static void createKML(ArrayList<ArrayList<ArrayList<Pair<String,String > > > > paths, Pair<String, String> client, ArrayList<Pair<String, String> > taxis, ArrayList<String> taxiids, String besttaxiid, String filename) throws IOException {
 	PrintWriter writer = new PrintWriter(filename, "UTF-8");
-	int depth, besttaxi;
+	int depth, besttaxi=0;
 	writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 	depth = 1;
 	writeToDepth(depth++, writer, "<Document>\n");
@@ -55,7 +55,7 @@ class KMLCreator {
 	writeToDepth(depth++, writer, "<Placemark>\n");
 	writeToDepth(depth, writer, "<name>Client</name>\n");
 	writeToDepth(depth++, writer, "<Point>\n");
-	writeToDepth(depth, writer, "<coordinates>" + String.valueOf(client.getKey()) + "," + String.valueOf(client.getValue()) + ",0</coordinates>\n");
+	writeToDepth(depth, writer, "<coordinates>" + client.getKey() + "," + client.getValue() + ",0</coordinates>\n");
 	writeToDepth(--depth, writer, "</Point>\n");
 	writeToDepth(--depth, writer, "</Placemark>\n");
 	String color;
@@ -65,9 +65,9 @@ class KMLCreator {
 		continue;
 	    }
 	    writeToDepth(depth++, writer, "<Placemark>\n");
-	    writeToDepth(depth, writer, "<name>Taxi " + Integer.toString(taxiids.get(i)) + "</name>\n");
+	    writeToDepth(depth, writer, "<name>Taxi " + taxiids.get(i) + "</name>\n");
 	    writeToDepth(depth++, writer, "<Point>\n");
-	    writeToDepth(depth, writer, "<coordinates>" + String.valueOf(taxis.get(i).getKey()) + "," + String.valueOf(taxis.get(i).getValue()) + ",0</coordinates>\n");
+	    writeToDepth(depth, writer, "<coordinates>" + taxis.get(i).getKey() + "," + taxis.get(i).getValue() + ",0</coordinates>\n");
 	    writeToDepth(--depth, writer, "</Point>\n");
 	    writeToDepth(--depth, writer, "</Placemark>\n");
 	    for (int j = 0; j < paths.get(i).size(); j++) {
@@ -77,9 +77,9 @@ class KMLCreator {
 	}
 	color = "green";
 	writeToDepth(depth++, writer, "<Placemark>\n");
-	writeToDepth(depth, writer, "<name>Taxi " + Integer.toString(taxiids.get(besttaxi)) + "</name>\n");
+	writeToDepth(depth, writer, "<name>Taxi " + taxiids.get(besttaxi) + "</name>\n");
 	writeToDepth(depth++, writer, "<Point>\n");
-	writeToDepth(depth, writer, "<coordinates>" + String.valueOf(taxis.get(besttaxi).getKey()) + "," + String.valueOf(taxis.get(besttaxi).getValue()) + ",0</coordinates>\n");
+	writeToDepth(depth, writer, "<coordinates>" + taxis.get(besttaxi).getKey() + "," + taxis.get(besttaxi).getValue() + ",0</coordinates>\n");
 	writeToDepth(--depth, writer, "</Point>\n");
 	writeToDepth(--depth, writer, "</Placemark>\n");
 	for (int j = 0; j < paths.get(besttaxi).size(); j++) {
