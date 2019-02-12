@@ -33,7 +33,7 @@ class KMLCreator {
 	writeToDepth(--depth, writer, "</Placemark>\n");
     }
     
-    public static void createKML(ArrayList<ArrayList<ArrayList<Pair<String,String > > > > paths, Pair<String, String> client, ArrayList<Pair<String, String> > taxis, ArrayList<String> taxiids, String besttaxiid, String filename) throws IOException {
+    public static void createKML(ArrayList<ArrayList<ArrayList<Pair<String,String > > > > paths, Pair<String, String> client, ArrayList<Pair<String, String> > taxis, ArrayList<String> taxiids, String besttaxiid, String filename, ArrayList<ArrayList<Pair<String,String>> > dest) throws IOException {
 	PrintWriter writer = new PrintWriter(filename, "UTF-8");
 	int depth, besttaxi=0;
 	writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
@@ -84,6 +84,16 @@ class KMLCreator {
 	writeToDepth(--depth, writer, "</Placemark>\n");
 	for (int j = 0; j < paths.get(besttaxi).size(); j++) {
 	    writePath(paths.get(besttaxi).get(j), writer, depth, color, taxiids.get(besttaxi));
+	}
+	color = "yellow";
+	writeToDepth(depth++, writer, "<Placemark>\n");
+	writeToDepth(depth, writer, "<name>Destination</name>\n");
+	writeToDepth(depth++, writer, "<Point>\n");
+	writeToDepth(depth, writer, "<coordinates>" + dest.get(0).get(dest.get(0).size()-1).getKey() + "," + dest.get(0).get(dest.get(0).size()-1).getValue() + ",0</coordinates>\n");
+	writeToDepth(--depth, writer, "</Point>\n");
+	writeToDepth(--depth, writer, "</Placemark>\n");
+	for (int j = 0; j < dest.size(); j++) {
+	    writePath(dest.get(j), writer, depth, color, "");
 	}
 	writeToDepth(--depth, writer, "</Document>\n");
 	writer.write("</kml>\n");
