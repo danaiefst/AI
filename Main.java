@@ -73,7 +73,7 @@ public class Main {
 	term = jipQuery.nextSolution();
 	double x2 = Double.parseDouble(term.getVariablesTable().get("X1").toString());
 	double y2 = Double.parseDouble(term.getVariablesTable().get("Y1").toString());
-	return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) / 60 / 1000;
+	return 5 * Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2)) / 60 / 1000;
     }
 
     private static double distance(String start, String end, String time) {
@@ -102,7 +102,7 @@ public class Main {
 	gScore.put(start, 0.0);
 	HashMap<String, Double> fScore = new HashMap<>();		
 	fScore.put(start, heuristic(start, end));
-	ArrayList<String> tempcame = new ArrayList<>(), nb;
+	ArrayList<String> tempcame = new ArrayList<>();
 	cameFrom.put(start, tempcame);
 	String current;
 	String temp;
@@ -161,14 +161,14 @@ public class Main {
 		
     public static void main(String[] args) throws JIPSyntaxErrorException, IOException {
 	jip = new JIPEngine();
+	jip.consultFile("client.pl");
+	System.out.println("Loaded client.pl");
 	jip.consultFile("data.pl");
 	System.out.println("Loaded data.pl");
 	jip.consultFile("lines.pl");
 	System.out.println("Loaded lines.pl");
 	jip.consultFile("nodes.pl");
 	System.out.println("Loaded nodes.pl");
-	jip.consultFile("client.pl");
-	System.out.println("Loaded client.pl");
 	jip.consultFile("taxis.pl");
 	System.out.println("Loaded taxis.pl");
 	jip.consultFile("traffic.pl");
@@ -200,20 +200,47 @@ public class Main {
 	}
 	System.out.println("Found available taxis");
 	ArrayList<Pair<String,Double>> taxis;
+	ArrayList<String> taxis_id;
+	ArrayList<Pair<Double, Double>> KML_taxis;
 	taxis = new ArrayList<>();
-	ArrayList<ArrayList<String>> paths;
-	double dist;
-	System.out.println(taxis_ids.size());
+	ArrayList<ArrayList<String>> path;
+	ArrayList<ArrayList<Arraylist<String>>> paths = new ArrayList<>();
+	ArrayList<ArrayList<ArrayList<Pair<Double,Double>>>> KML_paths = new ArrayList<>();
+	ArrayList
+	double dist,xt,yt,min_dist = 24;
+	String min_dist_i = "";
+	Pair<Double, Double> coor;
 	for(String i: taxis_ids) {
 	    jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(X,Y,"+i+",_,_,_,_), closest_node(X,Y,Id)."));
-	    String start = jipQuery.nextSolution().getVariablesTable().get("Id").toString();
-	    paths = astar(start, client, time);
-	    jipQuery = jip.openSynchronousQuery(parser.parseTerm("dist(" + start + "," + client + ",X)."));
-	    String dista = jipQuery.nextSolution().getVariablesTable().get("X").toString();
-	    dist = pathSize(paths.get(0), time.toString());
-	    System.out.println(i + " " + dist + dista);
+	    term = jipQuery.nextSolution();
+	    String start = term.getVariablesTable().get("Id").toString();
+	    xt = Double.parseDouble(term.getVariablesTable().get("X").toString());
+	    yt = Double.parseDouble(term.getVariablesTable().get("Y").toString());
+	    coor = new Pair(xt,yt);
+	    KML_taxis.add(coor);
+	    path = astar(start, client, time);
+	    ArrayList<ArrayList<Pair<Double,Double>>> tempi = new ArrayList<>();
+	    for (int j = 0; j < path.size(); j++) {
+	    	ArrayList<Pair<Double, Double>> tempj = new ArrayList<>();
+	    	for (int k = 0; k < path.get(j).size(); k++) {
+	    		jipQuery = jip.openSynchronousQuery(parser.parseTerm("node(" + path.get(j).get(k) + ",_,X,Y)."));
+	    		term = jipQuery.nextSolution();
+	    		xt = Double.parseDouble(term.getVariablesTable().get("X").toString());
+	    		yt = Double.parseDouble(term.getVariablesTable().get("Y").toString());
+	    		coor = new Pair(xt, yt);
+	    		tempj.add(coor);
+	    	}
+	    	tempi.add(tempj);
+	    }
+	    KML_paths.add(tempi);
+	    dist = pathSize(path.get(0), time.toString());
+	    if(dist < min_dist) {
+	    	min_dist = dist;
+	    	min_dist_i = i;
+	    }
+	    System.out.println(i + " " + dist);
 	    taxis.add(new Pair(start, dist));
-	}
-	System.out.println(taxis.size());
+	    taxis_id.add(start);
+	}			
     }
 }

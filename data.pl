@@ -3,12 +3,8 @@ distance(Id1, Id2, Time, Dist) :-
 	D is sqrt((X1-X2)^2+(Y1-Y2)^2) * 111195,
 	line(Line_id, Limit, _),
 	(traffic(Line_id, Low, High, Status), Time >= Low, Time < High ->
-	Dist is D / Limit / 1000 / Status
-	; Dist is D / Limit / 1000).
-	
-dist(Id1, Id2, Dist) :-
-	node(Id1, Line_id, X1, Y1), node(Id2, Line_id, X2, Y2),
-	Dist is sqrt((X1-X2)^2+(Y1-Y2)^2) * 111195.
+	Dist is 6 * D / Limit / 1000 / Status
+	; Dist is 6 * D / Limit / 1000).
 	
 can_ride(client(X, Y, Xd, Yd, _, People, Language), Id) :-
 	taxi(_, _, Id, Capacity, Language, _, LongD),

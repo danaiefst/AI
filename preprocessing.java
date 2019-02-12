@@ -19,11 +19,11 @@ class preprocessing {
 	} else if (x.equals("trunk")) {
 	    return "90";
 	} else if (x.equals("primary")) {
-	    return "110";
+	    return "360";
 	} else if (x.equals("motorway_link")) {
 	    return "60";
 	} else if (x.equals("motorway")) {
-	    return "120";
+	    return "480";
 	} else if (x.equals("tertiary_link")) {
 	    return "60";
 	} else if (x.equals("secondary_link")) {
