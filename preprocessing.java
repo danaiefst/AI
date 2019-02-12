@@ -204,11 +204,16 @@ class preprocessing {
     }
 
     private static void makeClient() throws IOException {
+	File file = new File("data/client.csv");
 	FileWriter fw = new FileWriter("client.pl");
 	BufferedWriter bw = new BufferedWriter(fw);
-	bw.write("client(23.733912,37.975687,23.772518,38.012301,20,3,greek).\n");
+	BufferedReader br = new BufferedReader(new FileReader(file));
+	br.readLine();
+	String c = br.readLine();
+	bw.write("client("+c.substring(0, c.length() - 2).replace(":00", "")+").\n");
 	bw.close();
 	fw.close();
+	br.close();
     }
     
     public static void main(String[] args) throws IOException {

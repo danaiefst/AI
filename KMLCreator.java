@@ -95,7 +95,7 @@ class KMLCreator {
 	writeToDepth(depth++, writer, "<Placemark>\n");
 	writeToDepth(depth, writer, "<name>Destination</name>\n");
 	writeToDepth(depth++, writer, "<Point>\n");
-	writeToDepth(depth, writer, "<coordinates>" + dest.get(0).get(dest.get(0).size()-1).getKey() + "," + dest.get(0).get(dest.get(0).size()-1).getValue() + ",0</coordinates>\n");
+	writeToDepth(depth, writer, "<coordinates>" + dest.get(0).get(0).getKey() + "," + dest.get(0).get(0).getValue() + ",0</coordinates>\n");
 	writeToDepth(--depth, writer, "</Point>\n");
 	writeToDepth(--depth, writer, "</Placemark>\n");
 	for (int j = 0; j < dest.size(); j++) {
