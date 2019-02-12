@@ -255,8 +255,8 @@ public class Main {
 	jip = new JIPEngine();
 	jip.consultFile("client.pl");
 	System.out.println("Loaded client.pl");
-	jip.consultFile("data.pl");
-	System.out.println("Loaded data.pl");
+	jip.consultFile("predicates.pl");
+	System.out.println("Loaded predicates.pl");
 	jip.consultFile("lines.pl");
 	System.out.println("Loaded lines.pl");
 	jip.consultFile("nodes.pl");
