@@ -240,22 +240,21 @@ public class Main {
 	    System.out.println(i + " " + dist);
 	    taxis.add(new Pair(start, dist));
 	}
-	ArrayList<ArrayList<Pair<String,Sring>>> KML_dest = new ArrayList<>();
+	ArrayList<ArrayList<Pair<String,String>>> KML_dest = new ArrayList<>();
 	path_to_dest = astar(client, dest, time + min_dist);
-	dist = pathSize(path.get(0), time.toString());
+	dist = pathSize(path_to_dest.get(0), time.toString());
 	for (ArrayList<String> i : path_to_dest) {
 		ArrayList<Pair<String,String>> tempi = new ArrayList<>();
 		for(String j : i) {
-			jipQuery = jip.openSynchronousQuery(parser.parseTerm("node(" + path_to_dest.get(i).get(j) + ",_,X,Y)."));
+			jipQuery = jip.openSynchronousQuery(parser.parseTerm("node(" + j + ",_,X,Y)."));
 	    		term = jipQuery.nextSolution();
 	    		xt = term.getVariablesTable().get("X").toString();
 	    		yt = term.getVariablesTable().get("Y").toString();
 	    		coor = new Pair(xt, yt);
-	    		tempj.add(coor);
+	    		tempi.add(coor);
 	    	}
-	    	tempi.add(tempj);
+	    	KML_dest.add(tempi);
 	}
-	
 	KMLCreator.createKML(KML_paths, new Pair(x, y), KML_taxis, taxis_ids, min_dist_i, "outfile.kml", KML_dest);
     }
 }
