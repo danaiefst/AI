@@ -202,6 +202,7 @@ public class Main {
 	ArrayList<Pair<String,Double>> taxis;
 	ArrayList<Pair<String, String>> KML_taxis = new ArrayList<>();
 	taxis = new ArrayList<>();
+	ArrayList<ArrayList<String>> path_to_dest;
 	ArrayList<ArrayList<String>> path;
 	ArrayList<ArrayList<ArrayList<String>>> paths = new ArrayList<>();
 	ArrayList<ArrayList<ArrayList<Pair<String,String>>>> KML_paths = new ArrayList<>();
@@ -239,6 +240,22 @@ public class Main {
 	    System.out.println(i + " " + dist);
 	    taxis.add(new Pair(start, dist));
 	}
-	KMLCreator.createKML(KML_paths, new Pair(x, y), KML_taxis, taxis_ids, min_dist_i, "outfile.kml");
+	ArrayList<ArrayList<Pair<String,Sring>>> KML_dest = new ArrayList<>();
+	path_to_dest = astar(client, dest, time + min_dist);
+	dist = pathSize(path.get(0), time.toString());
+	for (ArrayList<String> i : path_to_dest) {
+		ArrayList<Pair<String,String>> tempi = new ArrayList<>();
+		for(String j : i) {
+			jipQuery = jip.openSynchronousQuery(parser.parseTerm("node(" + path_to_dest.get(i).get(j) + ",_,X,Y)."));
+	    		term = jipQuery.nextSolution();
+	    		xt = term.getVariablesTable().get("X").toString();
+	    		yt = term.getVariablesTable().get("Y").toString();
+	    		coor = new Pair(xt, yt);
+	    		tempj.add(coor);
+	    	}
+	    	tempi.add(tempj);
+	}
+	
+	KMLCreator.createKML(KML_paths, new Pair(x, y), KML_taxis, taxis_ids, min_dist_i, "outfile.kml", KML_dest);
     }
 }
