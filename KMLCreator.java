@@ -46,6 +46,12 @@ class KMLCreator {
         writeToDepth(depth, writer, "<width>5</width>\n");
 	writeToDepth(--depth, writer, "</LineStyle>\n");
 	writeToDepth(--depth, writer, "</Style>\n");
+	writeToDepth(depth++, writer, "<Style id=\"yellow\">\n");
+	writeToDepth(depth++, writer, "<LineStyle>\n");
+        writeToDepth(depth, writer, "<color>ffbb0000</color>\n");
+        writeToDepth(depth, writer, "<width>5</width>\n");
+	writeToDepth(--depth, writer, "</LineStyle>\n");
+	writeToDepth(--depth, writer, "</Style>\n");
 	writeToDepth(depth++, writer, "<Style id=\"red\">\n");
 	writeToDepth(depth++, writer, "<LineStyle>\n");
         writeToDepth(depth, writer, "<color>ff0000ff</color>\n");

@@ -8,6 +8,12 @@
                 <width>5</width>
             </LineStyle>
         </Style>
+        <Style id="yellow">
+            <LineStyle>
+                <color>ffbb0000</color>
+                <width>5</width>
+            </LineStyle>
+        </Style>
         <Style id="red">
             <LineStyle>
                 <color>ff0000ff</color>

@@ -158,6 +158,23 @@ public class Main {
 	}
 	return null;
     }
+
+    private static String zfill(String x, int n) {
+	String ret = "";
+	for (int i = 0; i < n - x.length(); i++) {
+	    ret += "0";
+	}
+	return ret + x;
+    }
+
+    private static String getTime(double t) {
+	int seconds = (int)(t * 3600);
+	int p1 = seconds % 60;
+        int p2 = seconds / 60;
+        int p3 = p2 % 60;
+        p2 = p2 / 60;
+        return zfill(Integer.toString(p2),2) + ":" + zfill(Integer.toString(p3+(p1>30?1:0)),2);
+    }
 		
     public static void main(String[] args) throws JIPSyntaxErrorException, IOException {
 	jip = new JIPEngine();
@@ -209,7 +226,7 @@ public class Main {
 	double dist,min_dist = 24;
 	String min_dist_i = "", xt, yt;
 	Pair<String, String> coor;
-	double dist_2 = 24, dist_3 = 24, dist_4 = 24, dist_5 = 24;
+	double dist_2 = 24, dist_3 = 24, dist_4 = 24, dist_5 = 24, rating_1 = 0;
 	String id_2 = "", id_3 = "", id_4 = "", id_5 = "";
 	for(String i: taxis_ids) {
 	    jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(X,Y,"+i+",_,_,_,_), closest_node(X,Y,Id)."));
@@ -241,7 +258,7 @@ public class Main {
 	    }
 	    jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(_,_,"+min_dist_i+",_,_,R,_)."));
     	    term = jipQuery.nextSolution();
-    	    Double rating_1 = term.getVariablesTable().get("R").toString();
+    	    rating_1 = Double.parseDouble(term.getVariablesTable().get("R").toString());
 	    taxis.add(new Pair(i, dist));
 	}
 	
@@ -271,7 +288,7 @@ public class Main {
 	}
 	jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(_,_,"+id_2+",_,_,R,_)."));
     	term = jipQuery.nextSolution();
-    	double rating_2 = term.getVariablesTable().get("R").toString();
+    	double rating_2 = Double.parseDouble(term.getVariablesTable().get("R").toString());
 	for(Pair<String,Double> i: taxis) {
 		if(!i.getKey().equals(min_dist_i) && !i.getKey().equals(id_2) && i.getValue() < dist_3) {
 			dist_3 = i.getValue();
@@ -280,7 +297,7 @@ public class Main {
 	}
 	jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(_,_,"+id_3+",_,_,R,_)."));
     	term = jipQuery.nextSolution();
-    	double rating_3 = term.getVariablesTable().get("R").toString();
+    	double rating_3 = Double.parseDouble(term.getVariablesTable().get("R").toString());
 	for(Pair<String,Double> i: taxis) {
 		if(!i.getKey().equals(min_dist_i) && !i.getKey().equals(id_2) && !i.getKey().equals(id_3) && i.getValue() < dist_4) {
 			dist_4 = i.getValue();
@@ -289,7 +306,7 @@ public class Main {
 	}
 	jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(_,_,"+id_4+",_,_,R,_)."));
     	term = jipQuery.nextSolution();
-    	double rating_4 = term.getVariablesTable().get("R").toString();
+    	double rating_4 = Double.parseDouble(term.getVariablesTable().get("R").toString());
 	for(Pair<String,Double> i: taxis) {
 		if(!i.getKey().equals(min_dist_i) && !i.getKey().equals(id_2) && !i.getKey().equals(id_3) && !i.getKey().equals(id_4) && i.getValue() < dist_5) {
 			dist_5 = i.getValue();
@@ -298,7 +315,7 @@ public class Main {
 	}
 	jipQuery = jip.openSynchronousQuery(parser.parseTerm("taxi(_,_,"+id_5+",_,_,R,_)."));
     	term = jipQuery.nextSolution();
-    	double rating_5 = term.getVariablesTable().get("R").toString();
-    	System.out.println("Closest Taxis:\n #1 Id: " + min_dist_i + " Arrival Time: " + min_dist + " Rating: " + rating_1 + "\n#2 Id: " + id_2 + " Arrival Time: " + dist_2 + " Rating: " + rating_1 + "\n#3");
+    	double rating_5 = Double.parseDouble(term.getVariablesTable().get("R").toString());
+    	System.out.println("Closest Taxis:\n#1 Id: " + min_dist_i + " Arrival Time: " + getTime(time + min_dist) + " Rating: " + rating_1 + "\n#2 Id: " + id_2 + " Arrival Time: " + getTime(time + dist_2) + " Rating: " + rating_1 + "\n#3");
     }
 }
