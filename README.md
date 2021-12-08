@@ -1,3 +1,5 @@
+Excercises for Artificial Intelligence Course - NTUA
+
 # prolog
 
 node(node_id, line_id, x, y)
